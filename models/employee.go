@@ -33,18 +33,24 @@ func ConnectDatabase() error {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = db.Ping()
+	if err != nil {
+		return err
+	}
+
 	log.Println("Connected to database")
 	DB = db
 	return nil
 }
 
 type Employee struct {
-	Id         sql.NullString `json:"id"`
-	FirstName  string         `json:"first_name"`
-	LastName   string         `json:"last_name"`
-	Department string         `json:"department"`
-	Email      string         `json:"email,omitempty"`
-	DateHired  string         `json:"date_hired"`
+	Id         int    `json:"id"`
+	FirstName  string `json:"first_name"`
+	LastName   string `json:"last_name"`
+	Department string `json:"department"`
+	Email      string `json:"email,omitempty"`
+	DateHired  string `json:"date_hired"`
 }
 
 func GetEmployees(count int) ([]Employee, error) {
