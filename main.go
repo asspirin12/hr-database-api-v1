@@ -8,17 +8,13 @@ import (
 	"net/http"
 )
 
-func checkError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	err := models.ConnectDatabase()
-	checkError(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	e := handlers.Employees{}
 	mux := http.NewServeMux()
@@ -30,5 +26,7 @@ func main() {
 	}
 
 	err = s.ListenAndServe()
-	checkError(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

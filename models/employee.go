@@ -8,12 +8,6 @@ import (
 	"strconv"
 )
 
-func checkError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 var DB *sql.DB
 
 const (
@@ -55,7 +49,9 @@ type Employee struct {
 
 func GetEmployees(count int) ([]Employee, error) {
 	rows, err := DB.Query(`SELECT id, first_name, last_name, email, department, date_hired from employees LIMIT ` + strconv.Itoa(count))
-	checkError(err)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	defer rows.Close()
 
