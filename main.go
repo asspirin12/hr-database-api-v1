@@ -18,6 +18,7 @@ func main() {
 
 	e := handlers.Employees{}
 	mux := http.NewServeMux()
+
 	mux.Handle("/employees", e)
 
 	s := http.Server{

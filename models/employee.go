@@ -80,3 +80,22 @@ func GetEmployees(count int) ([]Employee, error) {
 	}
 	return workforce, err
 }
+
+func AddEmployee(newEmployee Employee) (int, error) {
+	employeeId := 0
+	err := DB.QueryRow(`
+INSERT INTO employees (first_name, last_name, email, department, date_hired) 
+VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+		newEmployee.FirstName,
+		newEmployee.LastName,
+		newEmployee.Email,
+		newEmployee.Department,
+		newEmployee.DateHired,
+	).Scan(&employeeId)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return employeeId, nil
+}
