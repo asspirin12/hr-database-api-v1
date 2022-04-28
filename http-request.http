@@ -6,3 +6,6 @@ GET http://localhost:8080/employees
 
 ###
 GET http://localhost:8080/employees
+
+###
+GET http://localhost:8080/employees/3

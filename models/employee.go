@@ -47,8 +47,31 @@ type Employee struct {
 	DateHired  string `json:"date_hired"`
 }
 
+func GetEmployeeById(id int) (Employee, error) {
+	statement := `SELECT first_name, last_name, email, department, date_hired FROM employees WHERE id = $1`
+	row := DB.QueryRow(statement, id)
+
+	person := Employee{Id: id}
+
+	err := row.Scan(
+		&person.FirstName,
+		&person.LastName,
+		&person.Email,
+		&person.Department,
+		&person.DateHired,
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return person, nil
+}
+
 func GetEmployees(count int) ([]Employee, error) {
-	rows, err := DB.Query(`SELECT id, first_name, last_name, email, department, date_hired from employees LIMIT ` + strconv.Itoa(count))
+	statement := `SELECT id, first_name, last_name, email, department, date_hired FROM employees LIMIT ` + strconv.Itoa(count)
+
+	rows, err := DB.Query(statement)
 	if err != nil {
 		log.Fatal(err)
 	}

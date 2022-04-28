@@ -19,7 +19,7 @@ func main() {
 	e := handlers.Employees{}
 	mux := http.NewServeMux()
 
-	mux.Handle("/employees", e)
+	mux.Handle("/employees/", e)
 
 	s := http.Server{
 		Addr:    "localhost:8080",
