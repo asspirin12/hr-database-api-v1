@@ -104,11 +104,78 @@ func GetEmployees(count int) ([]Employee, error) {
 	return workforce, err
 }
 
+func GetEmployeesByDepartment(dep string) ([]Employee, error) {
+	var department string
+
+	switch dep {
+	case "marketing":
+		department = "Marketing"
+	case "training":
+		department = "Training"
+	case "research_and_development":
+		department = "Research and Development"
+	case "sales":
+		department = "Sales"
+	case "business_development":
+		department = "Business Development"
+	case "product_management":
+		department = "Product Management"
+	case "support":
+		department = "Support"
+	case "legal":
+		department = "Legal"
+	case "accounting":
+		department = "Accounting"
+	case "services":
+		department = "Services"
+	case "hr":
+		department = "Human Resources"
+	case "engineering":
+		department = "Engineering"
+	}
+
+	statement := `
+SELECT id, first_name, last_name, email, department, date_hired 
+FROM employees 
+WHERE department = $1`
+
+	rows, err := DB.Query(statement, department)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	workforce := make([]Employee, 0)
+
+	for rows.Next() {
+		person := Employee{}
+		rows.Scan(
+			&person.Id,
+			&person.FirstName,
+			&person.LastName,
+			&person.Email,
+			&person.Department,
+			&person.DateHired,
+		)
+
+		workforce = append(workforce, person)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return workforce, nil
+}
+
 func AddEmployee(newEmployee Employee) (int, error) {
 	employeeId := 0
-	err := DB.QueryRow(`
+
+	statement := `
 INSERT INTO employees (first_name, last_name, email, department, date_hired) 
-VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+VALUES ($1, $2, $3, $4, $5) RETURNING id`
+
+	err := DB.QueryRow(statement,
 		newEmployee.FirstName,
 		newEmployee.LastName,
 		newEmployee.Email,

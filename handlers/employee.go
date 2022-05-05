@@ -20,18 +20,18 @@ func (e Employees) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			e.addEmployee(rw, r)
 			return
 		}
-	} else {
-		path := strings.Trim(r.URL.Path, "/")
-		pathElems := strings.Split(path, "/")
-		if len(pathElems) < 2 {
-			http.Error(rw, "Invalid URI", http.StatusBadRequest)
-			return
+	} else if strings.HasPrefix(r.URL.Path, "/department/") {
+		if r.Method == http.MethodGet {
+			dep := extractPathElem(rw, r)
+			e.getEmployeesByDepartment(rw, r, dep)
 		}
+		rw.WriteHeader(http.StatusMethodNotAllowed)
+	} else {
+		idString := extractPathElem(rw, r)
 
-		id, err := strconv.Atoi(pathElems[1])
+		id, err := strconv.Atoi(idString)
 		if err != nil {
-			http.Error(rw, "Invalid URI", http.StatusBadRequest)
-			return
+			log.Fatal(err)
 		}
 
 		if r.Method == http.MethodGet {
@@ -42,6 +42,27 @@ func (e Employees) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 			rw.WriteHeader(http.StatusMethodNotAllowed)
 			return
 		}
+	}
+}
+
+func extractPathElem(rw http.ResponseWriter, r *http.Request) string {
+	path := strings.Trim(r.URL.Path, "/")
+	pathElems := strings.Split(path, "/")
+	if len(pathElems) < 2 {
+		http.Error(rw, "Invalid URI", http.StatusBadRequest)
+		return ""
+	}
+
+	return pathElems[1]
+}
+
+func toJSON(rw http.ResponseWriter, err error, employeesList []models.Employee) {
+	encoder := json.NewEncoder(rw)
+
+	err = encoder.Encode(employeesList)
+	if err != nil {
+		http.Error(rw, "Unable to encode json", http.StatusInternalServerError)
+		log.Fatal(err)
 	}
 }
 
@@ -61,6 +82,13 @@ func (e Employees) getEmployeeById(rw http.ResponseWriter, r *http.Request, id i
 	}
 }
 
+func (e Employees) getEmployeesByDepartment(rw http.ResponseWriter, r *http.Request, dep string) {
+	log.Println("Handle GET employees by department")
+	employeesByDepartment, err := models.GetEmployeesByDepartment(dep)
+
+	toJSON(rw, err, employeesByDepartment)
+}
+
 func (e Employees) getEmployees(rw http.ResponseWriter, r *http.Request) {
 	log.Println("Handle GET employees")
 
@@ -69,13 +97,7 @@ func (e Employees) getEmployees(rw http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	encoder := json.NewEncoder(rw)
-
-	err = encoder.Encode(employeesList)
-	if err != nil {
-		http.Error(rw, "Unable to encode json", http.StatusInternalServerError)
-		log.Fatal(err)
-	}
+	toJSON(rw, err, employeesList)
 }
 
 func (e Employees) addEmployee(rw http.ResponseWriter, r *http.Request) {
