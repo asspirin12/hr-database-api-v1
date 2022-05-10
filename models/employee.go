@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"log"
+	"net/http"
 	"strconv"
 )
 
@@ -47,27 +48,6 @@ type Employee struct {
 	DateHired  string `json:"date_hired"`
 }
 
-func GetEmployeeById(id int) (Employee, error) {
-	statement := `SELECT first_name, last_name, email, department, date_hired FROM employees WHERE id = $1`
-	row := DB.QueryRow(statement, id)
-
-	person := Employee{Id: id}
-
-	err := row.Scan(
-		&person.FirstName,
-		&person.LastName,
-		&person.Email,
-		&person.Department,
-		&person.DateHired,
-	)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return person, nil
-}
-
 func GetEmployees(count int) ([]Employee, error) {
 	statement := `SELECT id, first_name, last_name, email, department, date_hired FROM employees LIMIT ` + strconv.Itoa(count)
 
@@ -104,8 +84,31 @@ func GetEmployees(count int) ([]Employee, error) {
 	return workforce, err
 }
 
+func GetEmployeeById(id int, rw http.ResponseWriter) (Employee, error) {
+	statement := `SELECT first_name, last_name, email, department, date_hired FROM employees WHERE id = $1`
+	row := DB.QueryRow(statement, id)
+
+	person := Employee{Id: id}
+
+	err := row.Scan(
+		&person.FirstName,
+		&person.LastName,
+		&person.Email,
+		&person.Department,
+		&person.DateHired,
+	)
+
+	if err != nil {
+		return person, err
+	}
+
+	return person, nil
+}
+
 func GetEmployeesByDepartment(dep string) ([]Employee, error) {
+
 	var department string
+	depURIList := "\n/marketing\n/training\n/research_and_development\n/sales\n/business_development\n/product_management\n/support\n/legal\n/accounting\n/services\n/hr\n/engineering"
 
 	switch dep {
 	case "marketing":
@@ -132,6 +135,8 @@ func GetEmployeesByDepartment(dep string) ([]Employee, error) {
 		department = "Human Resources"
 	case "engineering":
 		department = "Engineering"
+	default:
+		return []Employee{}, fmt.Errorf("department \"%s\" not found, check department URI: %s", dep, depURIList)
 	}
 
 	statement := `
@@ -188,4 +193,33 @@ VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	}
 
 	return employeeId, nil
+}
+
+func DeleteEmployee(id int) error {
+
+	statement := `DELETE FROM employees WHERE id = $1`
+
+	_, err := DB.Query(statement, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateEmployee(employee Employee, id int) error {
+
+	statement := `
+UPDATE employees SET first_name = $1, last_name = $2, email = $3, department = $4, date_hired = $5
+WHERE id = $6`
+
+	_, err := DB.Query(statement,
+		employee.FirstName,
+		employee.LastName,
+		employee.Email,
+		employee.Department,
+		employee.DateHired,
+		id)
+
+	return err
 }
