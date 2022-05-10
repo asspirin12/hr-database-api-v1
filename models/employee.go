@@ -26,7 +26,7 @@ func ConnectDatabase() error {
 
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	err = db.Ping()
