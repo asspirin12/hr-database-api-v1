@@ -1,7 +1,7 @@
 // Testing getEmployees, which returns a list of employees
 
 ### GET employees (limit 10). Successful request
-GET http://localhost:8080/
+GET http://localhost:8080/employees/
 
 ### DELETE all employees. 405 method not allowed.
 DELETE http://localhost:8080/employees/
