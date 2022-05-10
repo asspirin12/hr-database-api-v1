@@ -6,17 +6,17 @@ GET http://localhost:8080/employees/
 ### DELETE all employees. 405 method not allowed.
 DELETE http://localhost:8080/employees/
 
-### GET employee by Id. Successful request
+### GET employee by id. Successful request
 GET http://localhost:8080/employees/1
 
-### GET employee by Id that doesn't exist. 400 bad request.
+### GET employee by id that doesn't exist. 400 bad request.
 GET http://localhost:8080/employees/11111
 
-### GET employee by Id that is not numeric. 400 bad request.
+### GET employee by id that is not numeric. 400 bad request.
 GET http://localhost:8080/employees/ddd
 
-### DELETE employee by Id. Successful request
-DELETE http://localhost:8080/employees/1010
+### DELETE employee by id. Successful request
+DELETE http://localhost:8080/employees/999
 
 ### POST employee (add). Successful request
 POST http://localhost:8080/employees/
@@ -30,7 +30,7 @@ Content-Type: application/json
   "date_hired": "2022-04-25"
 }
 
-### POST employee by Id (update). Successful request.
+### POST employee by id (update). Successful request.
 POST http://localhost:8080/employees/1
 Content-Type: application/json
 
@@ -38,18 +38,18 @@ Content-Type: application/json
   "id":1,
   "first_name":"Tonnie",
   "last_name":"Dallmann",
-  "department":"Engineering",
+  "department":"Sales",
   "email":"tdallmann0@studiopress.com",
   "date_hired":"2016-02-23T00:00:00Z"}
 
 
-### POST employee by Id that doesn't exist. 400 bad request.
+### POST employee by id that doesn't exist. 400 bad request.
 POST http://localhost:8080/employees/1111111111111
 Content-Type: application/json
 
 {}
 
-### POST employee by Id that is not numeric. 400 bad request.
+### POST employee by id that is not numeric. 400 bad request.
 POST http://localhost:8080/employees/ddddddd
 Content-Type: application/json
 
