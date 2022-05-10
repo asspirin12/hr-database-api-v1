@@ -15,7 +15,7 @@ The application presents the following REST API to clients:
 
 ### Connect to database 
 
-Start a container in `docker-compose.yml,` connect to the container from the Database tool window. 
+Start a container in `docker-compose.yml,` connect to the container from the Database tool window (copy a driver comment entry `jdbc:postgresql://localhost:54333/guest?user=guest&password=guest` from `docker-compose.yml` and paste it to URL field in Data Sources and Drivers pop-up.). 
 
 Create the database structure by running `storage/init.sql`. Populate the database with the fake data by running `storage/employees.sql`. 
 
