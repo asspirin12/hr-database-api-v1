@@ -1,5 +1,3 @@
-// Testing getEmployees, which returns a list of employees
-
 ### GET employees (limit 10). Successful request
 GET http://localhost:8080/employees/
 
@@ -17,18 +15,22 @@ GET http://localhost:8080/employees/ddd
 
 ### DELETE employee by id. Successful request
 DELETE http://localhost:8080/employees/999
+###
+GET http://localhost:8080/employees/999
 
 ### POST employee (add). Successful request
 POST http://localhost:8080/employees/
 Content-Type: application/json
 
 {
-  "first_name": "Janina",
-  "last_name": "Basoch",
+  "first_name": "Amina",
+  "last_name": "Ayad",
   "department": "Sales",
-  "email": "345643398@example.com",
-  "date_hired": "2022-04-25"
+  "email": "98374589@example.com",
+  "date_hired": "2022-01-25"
 }
+### Check previous request
+GET http://localhost:8080/employees/1001
 
 ### POST employee by id (update). Successful request.
 POST http://localhost:8080/employees/1
@@ -40,26 +42,29 @@ Content-Type: application/json
   "last_name":"Dallmann",
   "department":"Sales",
   "email":"tdallmann0@studiopress.com",
-  "date_hired":"2016-02-23T00:00:00Z"}
-
-
-### POST employee by id that doesn't exist. 400 bad request.
-POST http://localhost:8080/employees/1111111111111
-Content-Type: application/json
-
-{}
+  "date_hired":"2016-02-23T00:00:00Z"
+}
+###
+GET http://localhost:8080/employees/1
 
 ### POST employee by id that is not numeric. 400 bad request.
-POST http://localhost:8080/employees/ddddddd
+POST http://localhost:8080/employees/d
 Content-Type: application/json
 
-{}
+{
+  "id": 1,
+  "first_name":"Tonnie",
+  "last_name":"Dallmann",
+  "department":"Sales",
+  "email":"tdallmann0@studiopress.com",
+  "date_hired":"2016-02-23T00:00:00Z"
+}
 
 ### GET employees by department. Successful request.
 GET http://localhost:8080/department/support
 
 ### GET employees by department that doesn't exist. 400 bad request.
-GET http://localhost:8080/department/ddddddd
+GET http://localhost:8080/department/dd
 
 ### DELETE employess by department. 405 method not allowed.
 DELETE http://localhost:8080/department/support
