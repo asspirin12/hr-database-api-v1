@@ -2,11 +2,13 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"strconv"
+
+	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB
@@ -19,6 +21,51 @@ const (
 	dbname   = "guest"
 )
 
+// Employee defines the structure for an employee entry
+// swagger:model
+type Employee struct {
+	// the id of the employee
+	//
+	// required: true
+	// min: 1
+	Id int `json:"id"`
+
+	// the first name of the employee
+	//
+	// required: true
+	FirstName string `json:"first_name"`
+
+	// the last name of the employee
+	//
+	// required: true
+	LastName string `json:"last_name"`
+
+	// the department where the employee works
+	//
+	// required: true
+	Department string `json:"department"`
+
+	// the email of the employee
+	//
+	// required: false
+	Email string `json:"email,omitempty"`
+
+	// the date when the employee was hired
+	//
+	// required: true
+	DateHired string `json:"date_hired"`
+}
+
+// Error error
+// swagger:model
+type Error struct {
+	// message
+	Message string `json:"message"`
+	// code
+	Code int `json:"code"`
+}
+
+// ConnectDatabase checks the connection to the database
 func ConnectDatabase() error {
 	connectionString := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -39,15 +86,7 @@ func ConnectDatabase() error {
 	return nil
 }
 
-type Employee struct {
-	Id         int    `json:"id"`
-	FirstName  string `json:"first_name"`
-	LastName   string `json:"last_name"`
-	Department string `json:"department"`
-	Email      string `json:"email,omitempty"`
-	DateHired  string `json:"date_hired"`
-}
-
+// GetEmployees returns a list of employees
 func GetEmployees(count int) ([]Employee, error) {
 	statement := `SELECT id, first_name, last_name, email, department, date_hired FROM employees LIMIT ` + strconv.Itoa(count)
 
@@ -84,6 +123,7 @@ func GetEmployees(count int) ([]Employee, error) {
 	return workforce, err
 }
 
+// GetEmployeeById returns a single employee which matches the id from the database
 func GetEmployeeById(id int, rw http.ResponseWriter) (Employee, error) {
 	statement := `SELECT first_name, last_name, email, department, date_hired FROM employees WHERE id = $1`
 	row := DB.QueryRow(statement, id)
@@ -105,6 +145,7 @@ func GetEmployeeById(id int, rw http.ResponseWriter) (Employee, error) {
 	return person, nil
 }
 
+// GetEmployeesByDepartment returns a list of all employees who work in a specific department
 func GetEmployeesByDepartment(dep string) ([]Employee, error) {
 
 	var department string
@@ -173,6 +214,7 @@ WHERE department = $1`
 	return workforce, nil
 }
 
+// AddEmployee adds an employee to the end of the database
 func AddEmployee(newEmployee Employee) (int, error) {
 	employeeId := 0
 
@@ -195,18 +237,34 @@ VALUES ($1, $2, $3, $4, $5) RETURNING id`
 	return employeeId, nil
 }
 
+// DeleteEmployee deletes an employee from the database
 func DeleteEmployee(id int) error {
 
-	statement := `DELETE FROM employees WHERE id = $1`
+	recordExist := true
 
-	_, err := DB.Query(statement, id)
+	statement := `SELECT EXISTS(SELECT 1 FROM employees WHERE id = $1)`
+	err := DB.QueryRow(statement, id).Scan(&recordExist)
 	if err != nil {
 		return err
 	}
 
+	if !recordExist {
+		return errors.New("record not found")
+	}
+
+	statement = `DELETE FROM employees WHERE id = $1`
+
+	_, err = DB.Query(statement, id)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Deleted record with id %d", id)
+
 	return nil
 }
 
+// UpdateEmployee replaces en employee in the database with the given item
 func UpdateEmployee(employee Employee, id int) error {
 
 	statement := `
