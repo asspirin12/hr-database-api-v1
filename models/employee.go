@@ -56,15 +56,6 @@ type Employee struct {
 	DateHired string `json:"date_hired"`
 }
 
-// Error error
-// swagger:model
-type Error struct {
-	// message
-	Message string `json:"message"`
-	// code
-	Code int `json:"code"`
-}
-
 // ConnectDatabase checks the connection to the database
 func ConnectDatabase() error {
 	connectionString := fmt.Sprintf("host=%s port=%d user=%s "+
