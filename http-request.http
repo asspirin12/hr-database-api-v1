@@ -1,25 +1,43 @@
-### GET employees (limit 10). Successful request
+// Testing getEmployees
+
+### GET employees (limit 10). 200 OK
 GET http://localhost:8080/employees/
 
-### DELETE all employees. 405 method not allowed.
+### GET employees (limit 10). 404 Not Found.
+GET http://localhost:8080/employes/
+
+### DELETE employees. 405 Method Not Allowed.
 DELETE http://localhost:8080/employees/
 
-### GET employee by id. Successful request
+// Testing getEmployeeById
+
+### GET employee by id. 200 OK
 GET http://localhost:8080/employees/1
 
-### GET employee by id that doesn't exist. 400 bad request.
-GET http://localhost:8080/employees/11111
-
-### GET employee by id that is not numeric. 400 bad request.
+### GET employee by id that is not numeric. 400 Bad Request.
 GET http://localhost:8080/employees/ddd
 
-### DELETE employee by id. Successful request
-DELETE http://localhost:8080/employees/999
-###
-GET http://localhost:8080/employees/999
+### GET employee by id that doesn't exist. 404 Not Found.
+GET http://localhost:8080/employees/11111
 
-### POST employee (add). Successful request
-POST http://localhost:8080/employees/
+// getEmployeesByDepartment
+
+### GET employees by department. 200 OK
+GET http://localhost:8080/department/support
+
+### GET employees by department that doesn't exist. 404 Not Found
+GET http://localhost:8080/department/dd
+
+### DELETE employess by department. 405 Method Not Allowed
+DELETE http://localhost:8080/department/support
+
+### POST employess by department. 405 Method Not Allowed.
+POST http://localhost:8080/department/support
+
+// Testing addEmployee
+
+### POST employee (add). 200 OK
+POST http://localhost:8080/employees
 Content-Type: application/json
 
 {
@@ -31,6 +49,8 @@ Content-Type: application/json
 }
 ### Check previous request
 GET http://localhost:8080/employees/1001
+
+// Testing updateEmployee
 
 ### POST employee by id (update). Successful request.
 POST http://localhost:8080/employees/1
@@ -59,15 +79,15 @@ Content-Type: application/json
   "email":"tdallmann0@studiopress.com",
   "date_hired":"2016-02-23T00:00:00Z"
 }
+###
 
-### GET employees by department. Successful request.
-GET http://localhost:8080/department/support
+// Testing deleteEmployee
 
-### GET employees by department that doesn't exist. 400 bad request.
-GET http://localhost:8080/department/dd
+### DELETE employee by id. 200 OK
+DELETE http://localhost:8080/employees/999
 
-### DELETE employess by department. 405 method not allowed.
-DELETE http://localhost:8080/department/support
+### Check deleted record. 404 Not Found
+GET http://localhost:8080/employees/999
 
-### POST employess by department. 405 method not allowed.
-POST http://localhost:8080/department/support
+### DELETE the same record. 404 Not Found
+DELETE http://localhost:8080/employees/999
