@@ -9,6 +9,15 @@ import (
 	"strings"
 )
 
+// Error error
+// swagger:model
+type Error struct {
+	// message
+	Message string `json:"message"`
+	// code
+	Code int `json:"code"`
+}
+
 type Employees struct{}
 
 func (e Employees) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
@@ -75,40 +84,14 @@ func extractPathElem(rw http.ResponseWriter, r *http.Request) string {
 	return pathElems[1]
 }
 
-func (e Employees) getEmployeeById(rw http.ResponseWriter, r *http.Request, id int) {
-	log.Println("Handle GET one employee")
+// swagger:route GET /employees/ employees listEmployees
+// Return a list of employees
+// responses:
+//  200: employeesResponse
+//  404: errorResponse
+//  405: errorResponse
 
-	employee, err := models.GetEmployeeById(id, rw)
-	if err != nil {
-		http.Error(rw, "Unable to retrieve data, check the id", http.StatusBadRequest)
-		log.Println(err)
-	}
-
-	encoder := json.NewEncoder(rw)
-	err = encoder.Encode(employee)
-	if err != nil {
-		http.Error(rw, "Unable to encode json", http.StatusBadRequest)
-		log.Println(err)
-	}
-}
-
-func (e Employees) getEmployeesByDepartment(rw http.ResponseWriter, r *http.Request, dep string) {
-	log.Println("Handle GET employees by department")
-	employeesByDepartment, err := models.GetEmployeesByDepartment(dep)
-	if err != nil {
-		http.Error(rw, "Department not found, check URI", http.StatusBadRequest)
-		log.Println(err)
-	}
-
-	encoder := json.NewEncoder(rw)
-
-	err = encoder.Encode(employeesByDepartment)
-	if err != nil {
-		http.Error(rw, "Unable to encode json", http.StatusInternalServerError)
-		log.Println(err)
-	}
-}
-
+// getEmployees returns a list of employees (limit is 10 records by default)
 func (e Employees) getEmployees(rw http.ResponseWriter, r *http.Request) {
 	log.Println("Handle GET employees")
 
@@ -127,6 +110,63 @@ func (e Employees) getEmployees(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:route GET /employees/{id} employees getEmployeeById
+// Return a single employee by id
+// responses:
+//  200: employeeResponse
+//  400: errorResponse
+//  404: errorResponse
+//  500: errorResponse
+
+// getEmployeeById returns a single employee which matches the id
+func (e Employees) getEmployeeById(rw http.ResponseWriter, r *http.Request, id int) {
+	log.Println("Handle GET one employee")
+
+	employee, err := models.GetEmployeeById(id, rw)
+	if err != nil {
+		http.Error(rw, "Unable to retrieve data, check the id", http.StatusNotFound)
+		log.Println(err)
+	}
+
+	encoder := json.NewEncoder(rw)
+	err = encoder.Encode(employee)
+	if err != nil {
+		http.Error(rw, "Unable to encode json", http.StatusInternalServerError)
+		log.Println(err)
+	}
+}
+
+// swagger:route GET /employees/{department} employees getEmployeesByDepartment
+// Return a list of employees working in a particular department
+// responses:
+//  200: employeesResponse
+//  404: errorResponse
+//  405: errorResponse
+
+// getEmployeesByDepartment returns a list of employees working in a particular department
+func (e Employees) getEmployeesByDepartment(rw http.ResponseWriter, r *http.Request, dep string) {
+	log.Println("Handle GET employees by department")
+	employeesByDepartment, err := models.GetEmployeesByDepartment(dep)
+	if err != nil {
+		http.Error(rw, "Department not found, check URI", http.StatusNotFound)
+		log.Println(err)
+	}
+
+	encoder := json.NewEncoder(rw)
+
+	err = encoder.Encode(employeesByDepartment)
+	if err != nil {
+		http.Error(rw, "Unable to encode json", http.StatusInternalServerError)
+		log.Println(err)
+	}
+}
+
+// swagger:route POST /employees/ employees addEmployee
+// Add a new employee to the end of the database
+// responses:
+//  500: errorResponse
+
+// addEmployee adds an employee to the end of the database
 func (e Employees) addEmployee(rw http.ResponseWriter, r *http.Request) {
 	log.Println("Handle POST employee")
 
@@ -147,16 +187,12 @@ func (e Employees) addEmployee(rw http.ResponseWriter, r *http.Request) {
 	log.Printf("Added a record with the id %d", id)
 }
 
-func (e Employees) deleteEmployee(rw http.ResponseWriter, r *http.Request, id int) {
-	log.Println("Handle DELETE employee")
+// swagger:route POST /employees/{id} employees updateEmployee
+// Update an employee record
+// responses:
+//  500: errorResponse
 
-	err := models.DeleteEmployee(id)
-	if err != nil {
-		http.Error(rw, "Failed to delete a record", http.StatusInternalServerError)
-		log.Println(err)
-	}
-}
-
+// updateEmployee updates an employee record
 func (e Employees) updateEmployee(rw http.ResponseWriter, r *http.Request, id int) {
 	log.Println("Handle UPDATE employee")
 
@@ -170,7 +206,23 @@ func (e Employees) updateEmployee(rw http.ResponseWriter, r *http.Request, id in
 
 	err = models.UpdateEmployee(employee, id)
 	if err != nil {
-		http.Error(rw, "Failed to update a record", http.StatusBadRequest)
+		http.Error(rw, "Failed to update a record", http.StatusInternalServerError)
+		log.Println(err)
+	}
+}
+
+// swagger:route DELETE /employees/{id} employees deleteEmployee
+// Delete an employee from the database
+// responses:
+//  500: errorResponse
+
+// deleteEmployee deletes an employee from the database by id
+func (e Employees) deleteEmployee(rw http.ResponseWriter, r *http.Request, id int) {
+	log.Println("Handle DELETE employee")
+
+	err := models.DeleteEmployee(id)
+	if err != nil {
+		http.Error(rw, "Failed to delete a record, check id", http.StatusNotFound)
 		log.Println(err)
 	}
 }
