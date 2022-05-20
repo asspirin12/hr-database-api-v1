@@ -1,0 +1,197 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  Employee:
+    description: Employee defines the structure for an employee entry
+    properties:
+      date_hired:
+        description: the date when the employee was hired
+        type: string
+        x-go-name: DateHired
+      department:
+        description: the department where the employee works
+        type: string
+        x-go-name: Department
+      email:
+        description: the email of the employee
+        type: string
+        x-go-name: Email
+      first_name:
+        description: the first name of the employee
+        type: string
+        x-go-name: FirstName
+      id:
+        description: the id of the employee
+        format: int64
+        minimum: 1
+        type: integer
+        x-go-name: Id
+      last_name:
+        description: the last name of the employee
+        type: string
+        x-go-name: LastName
+    required:
+    - id
+    - first_name
+    - last_name
+    - department
+    - date_hired
+    type: object
+    x-go-package: hr-database-api/models
+  Error:
+    description: Error error
+    properties:
+      code:
+        description: code
+        format: int64
+        type: integer
+        x-go-name: Code
+      message:
+        description: message
+        type: string
+        x-go-name: Message
+    type: object
+    x-go-package: hr-database-api/handlers
+host: localhost:8080
+info:
+  description: Documentation for HR Database API
+  title: Package classification of HR Database API
+  version: 1.0.0
+paths:
+  /employees/:
+    get:
+      description: Return a list of employees
+      operationId: listEmployees
+      responses:
+        "200":
+          $ref: '#/responses/employeesResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "405":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - employees
+    post:
+      description: Add a new employee to the end of the database
+      operationId: addEmployee
+      parameters:
+      - description: |-
+          Employee data structure to Add or Update
+          The id field is ignored by Add operation
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/Employee'
+      responses:
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - employees
+  /employees/{department}:
+    get:
+      description: Return a list of employees working in a particular department
+      operationId: getEmployeesByDepartment
+      parameters:
+      - description: The department name
+        in: path
+        name: department
+        required: true
+        type: string
+        x-go-name: Department
+      responses:
+        "200":
+          $ref: '#/responses/employeesResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "405":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - employees
+  /employees/{id}:
+    delete:
+      description: Delete an employee from the database
+      operationId: deleteEmployee
+      parameters:
+      - description: The id of the employee whose record is retrieved, updated or
+          deleted
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: Id
+      responses:
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - employees
+    get:
+      description: Return a single employee by id
+      operationId: getEmployeeById
+      parameters:
+      - description: The id of the employee whose record is retrieved, updated or
+          deleted
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: Id
+      responses:
+        "200":
+          $ref: '#/responses/employeeResponse'
+        "400":
+          $ref: '#/responses/errorResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - employees
+    post:
+      description: Update an employee record
+      operationId: updateEmployee
+      parameters:
+      - description: |-
+          Employee data structure to Add or Update
+          The id field is ignored by Add operation
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/Employee'
+      - description: The id of the employee whose record is retrieved, updated or
+          deleted
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: Id
+      responses:
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - employees
+produces:
+- application/json
+responses:
+  employeeResponse:
+    description: A single employee returned
+    schema:
+      $ref: '#/definitions/Employee'
+  employeesResponse:
+    description: A list of employees returned
+    schema:
+      items:
+        $ref: '#/definitions/Employee'
+      type: array
+  errorResponse:
+    description: An error message returned as a string and an HTTP status code
+    schema:
+      $ref: '#/definitions/Error'
+schemes:
+- http
+swagger: "2.0"
