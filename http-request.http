@@ -84,10 +84,10 @@ Content-Type: application/json
 // Testing deleteEmployee
 
 ### DELETE employee by id. 200 OK
-DELETE http://localhost:8080/employees/999
+DELETE http://localhost:8080/employees/1001
 
 ### Check deleted record. 404 Not Found
-GET http://localhost:8080/employees/999
+GET http://localhost:8080/employees/1001
 
 ### DELETE the same record. 404 Not Found
-DELETE http://localhost:8080/employees/999
+DELETE http://localhost:8080/employees/1001
