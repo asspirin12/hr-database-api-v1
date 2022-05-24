@@ -107,6 +107,8 @@ paths:
           $ref: '#/responses/errorResponse'
         "405":
           $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
       tags:
       - employees
   /employees/{id}:
@@ -123,6 +125,8 @@ paths:
         type: integer
         x-go-name: Id
       responses:
+        "404":
+          $ref: '#/responses/errorResponse'
         "500":
           $ref: '#/responses/errorResponse'
       tags:
@@ -171,6 +175,8 @@ paths:
         type: integer
         x-go-name: Id
       responses:
+        "400":
+          $ref: '#/responses/errorResponse'
         "500":
           $ref: '#/responses/errorResponse'
       tags:

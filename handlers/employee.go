@@ -142,6 +142,7 @@ func (e Employees) getEmployeeById(rw http.ResponseWriter, r *http.Request, id i
 //  200: employeesResponse
 //  404: errorResponse
 //  405: errorResponse
+//  500: errorResponse
 
 // getEmployeesByDepartment returns a list of employees working in a particular department
 func (e Employees) getEmployeesByDepartment(rw http.ResponseWriter, r *http.Request, dep string) {
@@ -191,6 +192,7 @@ func (e Employees) addEmployee(rw http.ResponseWriter, r *http.Request) {
 // Update an employee record
 // responses:
 //  500: errorResponse
+//  400: errorResponse
 
 // updateEmployee updates an employee record
 func (e Employees) updateEmployee(rw http.ResponseWriter, r *http.Request, id int) {
@@ -215,6 +217,7 @@ func (e Employees) updateEmployee(rw http.ResponseWriter, r *http.Request, id in
 // Delete an employee from the database
 // responses:
 //  500: errorResponse
+//  404: errorResponse
 
 // deleteEmployee deletes an employee from the database by id
 func (e Employees) deleteEmployee(rw http.ResponseWriter, r *http.Request, id int) {
