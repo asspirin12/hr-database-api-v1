@@ -37,7 +37,7 @@ POST http://localhost:8080/department/support
 // Testing addEmployee
 
 ### POST employee (add). 200 OK
-POST http://localhost:8080/employees
+POST http://localhost:8080/employees/
 Content-Type: application/json
 
 {
