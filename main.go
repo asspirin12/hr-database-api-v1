@@ -21,7 +21,6 @@ func main() {
 
 	mux.Handle("/employees/", e)
 	mux.Handle("/department/", e)
-
 	s := http.Server{
 		Addr:    "localhost:8080",
 		Handler: mux,

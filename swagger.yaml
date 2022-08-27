@@ -59,6 +59,28 @@ info:
   title: Package classification of HR Database API
   version: 1.0.0
 paths:
+  /department/{department}:
+    get:
+      description: Return a list of employees working in a particular department
+      operationId: getEmployeesByDepartment
+      parameters:
+      - description: The department name
+        in: path
+        name: department
+        required: true
+        type: string
+        x-go-name: Department
+      responses:
+        "200":
+          $ref: '#/responses/employeesResponse'
+        "404":
+          $ref: '#/responses/errorResponse'
+        "405":
+          $ref: '#/responses/errorResponse'
+        "500":
+          $ref: '#/responses/errorResponse'
+      tags:
+      - employees
   /employees/:
     get:
       description: Return a list of employees
@@ -85,28 +107,6 @@ paths:
         schema:
           $ref: '#/definitions/Employee'
       responses:
-        "500":
-          $ref: '#/responses/errorResponse'
-      tags:
-      - employees
-  /employees/{department}:
-    get:
-      description: Return a list of employees working in a particular department
-      operationId: getEmployeesByDepartment
-      parameters:
-      - description: The department name
-        in: path
-        name: department
-        required: true
-        type: string
-        x-go-name: Department
-      responses:
-        "200":
-          $ref: '#/responses/employeesResponse'
-        "404":
-          $ref: '#/responses/errorResponse'
-        "405":
-          $ref: '#/responses/errorResponse'
         "500":
           $ref: '#/responses/errorResponse'
       tags:
