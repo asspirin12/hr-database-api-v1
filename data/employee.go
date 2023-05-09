@@ -1,4 +1,4 @@
-package models
+package data
 
 import (
 	"database/sql"
@@ -79,14 +79,19 @@ func ConnectDatabase() error {
 
 // GetEmployees returns a list of employees
 func GetEmployees(count int) ([]Employee, error) {
-	statement := `SELECT id, first_name, last_name, email, department, date_hired FROM employees LIMIT ` + strconv.Itoa(count)
+	statement := `SELECT id, first_name, last_name, email, department, date_hired FROM employees LIMIT 10` + strconv.Itoa(count)
 
 	rows, err := DB.Query(statement)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	workforce := make([]Employee, 0)
 
@@ -185,7 +190,7 @@ WHERE department = $1`
 
 	for rows.Next() {
 		person := Employee{}
-		rows.Scan(
+		err := rows.Scan(
 			&person.Id,
 			&person.FirstName,
 			&person.LastName,
@@ -193,6 +198,9 @@ WHERE department = $1`
 			&person.Department,
 			&person.DateHired,
 		)
+		if err != nil {
+			return nil, err
+		}
 
 		workforce = append(workforce, person)
 	}

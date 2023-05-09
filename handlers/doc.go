@@ -15,7 +15,7 @@
 // swagger:meta
 package handlers
 
-import "hr-database-api/models"
+import "hr-database-api/data"
 
 // An error message returned as a string and an HTTP status code
 // swagger:response errorResponse
@@ -30,7 +30,7 @@ type errorResponse struct {
 type employeesResponse struct {
 	// All employees in the database
 	// in: body
-	Body []models.Employee
+	Body []data.Employee
 }
 
 // A single employee returned
@@ -38,7 +38,7 @@ type employeesResponse struct {
 type employeeResponse struct {
 	// An employee
 	// in: body
-	Body models.Employee
+	Body data.Employee
 }
 
 //
@@ -48,7 +48,7 @@ type employeeParams struct {
 	// The id field is ignored by Add operation
 	// in: body
 	// required: true
-	Body models.Employee
+	Body data.Employee
 }
 
 // swagger:parameters updateEmployee deleteEmployee getEmployeeById

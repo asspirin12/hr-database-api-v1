@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
-	"hr-database-api/models"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"hr-database-api/data"
 )
 
 // Error error
@@ -95,7 +96,7 @@ func extractPathElem(rw http.ResponseWriter, r *http.Request) string {
 func (e Employees) getEmployees(rw http.ResponseWriter, r *http.Request) {
 	log.Println("Handle GET employees")
 
-	employeesList, err := models.GetEmployees(10)
+	employeesList, err := data.GetEmployees(10)
 	if err != nil {
 		http.Error(rw, "Unable to get employees list", http.StatusInternalServerError)
 		log.Println(err)
@@ -122,7 +123,7 @@ func (e Employees) getEmployees(rw http.ResponseWriter, r *http.Request) {
 func (e Employees) getEmployeeById(rw http.ResponseWriter, r *http.Request, id int) {
 	log.Println("Handle GET one employee")
 
-	employee, err := models.GetEmployeeById(id, rw)
+	employee, err := data.GetEmployeeById(id, rw)
 	if err != nil {
 		http.Error(rw, "Unable to retrieve data, check the id", http.StatusNotFound)
 		log.Println(err)
@@ -147,7 +148,7 @@ func (e Employees) getEmployeeById(rw http.ResponseWriter, r *http.Request, id i
 // getEmployeesByDepartment returns a list of employees working in a particular department
 func (e Employees) getEmployeesByDepartment(rw http.ResponseWriter, r *http.Request, dep string) {
 	log.Println("Handle GET employees by department")
-	employeesByDepartment, err := models.GetEmployeesByDepartment(dep)
+	employeesByDepartment, err := data.GetEmployeesByDepartment(dep)
 	if err != nil {
 		http.Error(rw, "Department not found, check URI", http.StatusNotFound)
 		log.Println(err)
@@ -171,7 +172,7 @@ func (e Employees) getEmployeesByDepartment(rw http.ResponseWriter, r *http.Requ
 func (e Employees) addEmployee(rw http.ResponseWriter, r *http.Request) {
 	log.Println("Handle POST employee")
 
-	employee := models.Employee{}
+	employee := data.Employee{}
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&employee)
@@ -180,7 +181,7 @@ func (e Employees) addEmployee(rw http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 	}
 
-	id, err := models.AddEmployee(employee)
+	id, err := data.AddEmployee(employee)
 	if err != nil {
 		http.Error(rw, "Failed to add a new employee", http.StatusInternalServerError)
 		log.Println(err)
@@ -198,7 +199,7 @@ func (e Employees) addEmployee(rw http.ResponseWriter, r *http.Request) {
 func (e Employees) updateEmployee(rw http.ResponseWriter, r *http.Request, id int) {
 	log.Println("Handle UPDATE employee")
 
-	employee := models.Employee{}
+	employee := data.Employee{}
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&employee)
 	if err != nil {
@@ -206,7 +207,7 @@ func (e Employees) updateEmployee(rw http.ResponseWriter, r *http.Request, id in
 		log.Println(err)
 	}
 
-	err = models.UpdateEmployee(employee, id)
+	err = data.UpdateEmployee(employee, id)
 	if err != nil {
 		http.Error(rw, "Failed to update a record", http.StatusInternalServerError)
 		log.Println(err)
@@ -223,7 +224,7 @@ func (e Employees) updateEmployee(rw http.ResponseWriter, r *http.Request, id in
 func (e Employees) deleteEmployee(rw http.ResponseWriter, r *http.Request, id int) {
 	log.Println("Handle DELETE employee")
 
-	err := models.DeleteEmployee(id)
+	err := data.DeleteEmployee(id)
 	if err != nil {
 		http.Error(rw, "Failed to delete a record, check id", http.StatusNotFound)
 		log.Println(err)
