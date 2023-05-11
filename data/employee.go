@@ -21,6 +21,7 @@ const (
 	dbname   = "guest"
 )
 
+//test
 // Employee defines the structure for an employee entry
 // swagger:model
 type Employee struct {
