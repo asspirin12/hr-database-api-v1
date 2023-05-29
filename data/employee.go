@@ -79,7 +79,7 @@ func ConnectDatabase() error {
 
 // GetEmployees returns a list of employees
 func GetEmployees(count int) ([]Employee, error) {
-	statement := `SELECT id, first_name, last_name, email, department, date_hired FROM employees LIMIT 10` + strconv.Itoa(count)
+	statement := `SELECT id, first_name, last_name, email, department, date_hired FROM employees LIMIT ` + strconv.Itoa(count)
 
 	rows, err := DB.Query(statement)
 	if err != nil {
