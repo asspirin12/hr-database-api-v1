@@ -10,7 +10,7 @@ import (
 
 	_ "github.com/lib/pq"
 )
-// Test
+
 var DB *sql.DB
 
 const (
